@@ -1,6 +1,7 @@
 from flask import Flask
+from db_init import db
 
-from model import ModelModel, db
+from model import ModelModel, Sizes
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Sun580800@localhost/tomibo'
@@ -13,7 +14,7 @@ def base():
 
 @app.route('/test')
 def create():
-    model1 = ModelModel(model_name='testModel', article_number='article')
+    model1 = ModelModel(model_name='sizestestsss', article_number='fjkljhgkhsghklf', size_range=[Sizes.M, Sizes.S])
     db.session.add(model1)
     db.session.commit()
     return "good"

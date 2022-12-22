@@ -1,4 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
+from db_init import db
 from enum import Enum, auto
 from sqlalchemy.dialects.postgresql import (
     ARRAY,
@@ -6,8 +6,6 @@ from sqlalchemy.dialects.postgresql import (
     TEXT,
     ENUM,
 )
-
-db = SQLAlchemy()
 
 
 class Sizes(Enum):
@@ -27,7 +25,7 @@ class ModelModel(db.Model):
     photo = db.Column(BYTEA)
     layout_patterns = db.Column(BYTEA)
     tailoring_technology = db.Column(TEXT)
-    size_range = db.Column(ARRAY(ENUM(Sizes, name='sizes')))
+    size_range = db.Column(ARRAY(ENUM(Sizes, name='size_ranges')))
 
     def __init__(self, model_name, article_number, photo=None, layout_patterns=None, tailoring_technology=None,
                  size_range=None):
