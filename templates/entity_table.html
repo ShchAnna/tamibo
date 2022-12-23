@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+{% block content %}
+<h1>{{ page.title }}</h1>
+<div> {{ list }}</div>
+<table class="table">
+    <thead>
+    <tr>
+        {% for header in t.headers %}
+        <th> {{ header }}</th>
+        {% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in t.rows %}
+    <tr>
+        {% for item in row.items %}
+        <td>
+            {{ item.val }}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
