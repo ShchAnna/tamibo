@@ -84,7 +84,7 @@ CREATE TABLE materials
 	model_id integer NOT NULL,
     FOREIGN KEY (model_id) REFERENCES model (model_id),
     materials_name text NOT NULL,
-    m_per_one numeric NOT NULL
+    m_per_ruler numeric NOT NULL
 );
 
 CREATE TABLE accessories_cost

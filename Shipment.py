@@ -1,0 +1,23 @@
+from db_init import db
+from sqlalchemy.dialects.postgresql import (
+    INTEGER,
+    DATE
+)
+
+class shipment(db.Model):
+    __tablename__ = "shipment"
+
+    shipment_id = db.Column(db.INTEGER, primary_key=True)
+    model_id = db.Column(db.INTEGER, db.ForeignKey('model.model_id'))
+    shipment_date = db.Column(DATE)
+    products_number = db.Column(INTEGER)
+    rulers_number = db.Column(INTEGER)
+
+    def __init__(self, model_id, shipment_date=None, products_number=None, rulers_number=None):
+        self.model_id = model_id
+        self.shipment_date = shipment_date
+        self.products_number = products_number
+        self.rulers_number = rulers_number
+
+    def __repr__(self):
+        return f"{self.shipment_id}:{self.model_id}:{self.shipment_date}:{self.products_number}:{self.rulers_number}"
