@@ -183,6 +183,10 @@ def CreatePacking():
         db.session.commit()
         return str(NewPacking)
 
+@app.route('/packing', methods=['GET'])
+def RetrievePackingList():
+    packing_ = Packing.query.all()
+    return str(packing_)
 @app.route('/packing/<int:id>', methods = ['GET','POST', 'DELETE'])
 def RetrieveUpdateDeleteSinglePacking(id):
     packing_ = Packing.query.filter_by(packing_id=id).first()
@@ -225,6 +229,10 @@ def CreateJobs():
         db.session.commit()
         return str(NewJobs)
 
+@app.route('/jobs', methods=['GET'])
+def RetrieveJobsList():
+    jobs_ = Jobs.query.all()
+    return str(jobs_)
 @app.route('/jobs/<int:id>', methods = ['GET','POST', 'DELETE'])
 def RetrieveUpdateDeleteSingleJobs(id):
     jobs_ = Jobs.query.filter_by(jobs_id=id).first()
@@ -252,13 +260,51 @@ def RetrieveUpdateDeleteSingleJobs(id):
         abort(404)
     return str(jobs_)
 
+@app.route('/accessories/create' , methods = ['GET','POST'])
+def CreateAccessories():
+    if request.method == 'GET':
+        return render_template('createModel.html')
 
-@app.route('/acc')
-def createAcc():
-    accessories1 = Accessories(2, 'pugovka', 21)
-    db.session.add(accessories1)
-    db.session.commit()
-    return "mnogo pugovak"
+    if request.method == 'POST':
+        model_id = request.form['model_id']
+        accessories_name = request.form['accessories_name']
+        number_per_one = request.form['number_per_one']
+        NewAccessories = Accessories(model_id, accessories_name, number_per_one)
+        db.session.add(NewAccessories)
+        db.session.commit()
+        return str(NewAccessories)
+
+@app.route('/accessories', methods=['GET'])
+def RetrieveAccessoriesList():
+    accessories_ = Accessories.query.all()
+    return str(accessories_)
+
+@app.route('/accessories/<int:id>', methods = ['GET','POST', 'DELETE'])
+def RetrieveUpdateDeleteSingleAccessories(id):
+    accessories_ = Accessories.query.filter_by(accessories_id=id).first()
+    if request.method == 'GET':
+        if accessories_:
+            return str(accessories_)
+        return f"Accessories with id ={id} Doenst exist"
+    if request.method == 'POST':
+        if accessories_:
+            accessories_.model_id = request.form['model_id']
+            accessories_.accessories_name = request.form['accessories_name']
+            accessories_.number_per_one = request.form['number_per_one']
+
+
+            db.session.add(accessories_)
+            db.session.commit()
+            up = Accessories.query.filter_by(accessories_id=id).first()
+            return str(up)
+        return f"Accessories with id = {id} Does nit exist"
+    if request.method == 'DELETE':
+        if accessories_:
+            db.session.delete(accessories_)
+            db.session.commit()
+            return 'deleted'
+        abort(404)
+    return str(accessories_)
 
 @app.route('/acc/cost')
 def createAccCost():
