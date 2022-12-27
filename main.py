@@ -210,12 +210,48 @@ def RetrieveUpdateDeleteSinglePacking(id):
         abort(404)
     return str(packing_)
 
-@app.route('/jobs')
-def createJobs():
-    jobs1 = Jobs(3, 'kroy', 'cech', 200)
-    db.session.add(jobs1)
-    db.session.commit()
-    return "cech chech"
+@app.route('/jobs/create' , methods = ['GET','POST'])
+def CreateJobs():
+    if request.method == 'GET':
+        return render_template('createModel.html')
+
+    if request.method == 'POST':
+        shipment_id = request.form['shipment_id']
+        jobs_tipe = request.form['jobs_tipe']
+        employee = request.form['employee']
+        jobs_cost = request.form['jobs_cost']
+        NewJobs = Jobs(shipment_id, jobs_tipe, employee, jobs_cost)
+        db.session.add(NewJobs)
+        db.session.commit()
+        return str(NewJobs)
+
+@app.route('/jobs/<int:id>', methods = ['GET','POST', 'DELETE'])
+def RetrieveUpdateDeleteSingleJobs(id):
+    jobs_ = Jobs.query.filter_by(jobs_id=id).first()
+    if request.method == 'GET':
+        if jobs_:
+            return str(jobs_)
+        return f"Jobs with id ={id} Doenst exist"
+    if request.method == 'POST':
+        if jobs_:
+            jobs_.shipment_id = request.form['shipment_id']
+            jobs_.jobs_tipe = request.form['jobs_tipe']
+            jobs_.employee = request.form['employee']
+            jobs_.jobs_cost = request.form['jobs_cost']
+
+            db.session.add(jobs_)
+            db.session.commit()
+            up = Jobs.query.filter_by(jobs_id=id).first()
+            return str(up)
+        return f"Packing with id = {id} Does nit exist"
+    if request.method == 'DELETE':
+        if jobs_:
+            db.session.delete(jobs_)
+            db.session.commit()
+            return 'deleted'
+        abort(404)
+    return str(jobs_)
+
 
 @app.route('/acc')
 def createAcc():
