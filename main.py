@@ -168,12 +168,47 @@ def RetrieveUpdateDeleteSingleDelivery(id):
         abort(404)
     return str(delivery_)
 
-@app.route('/pack')
-def createPacking():
-    packing1 = Packing(shipment_id=3, tags_cost=100, packege_cost=800, label_cost=200)
-    db.session.add(packing1)
-    db.session.commit()
-    return "Korobochky"
+@app.route('/packing/create' , methods = ['GET','POST'])
+def CreatePacking():
+    if request.method == 'GET':
+        return render_template('createModel.html')
+
+    if request.method == 'POST':
+        shipment_id = request.form['shipment_id']
+        tags_cost = request.form['tags_cost']
+        label_cost = request.form['label_cost']
+        packege_cost = request.form['packege_cost']
+        NewPacking = Packing(shipment_id, tags_cost, label_cost, packege_cost)
+        db.session.add(NewPacking)
+        db.session.commit()
+        return str(NewPacking)
+
+@app.route('/packing/<int:id>', methods = ['GET','POST', 'DELETE'])
+def RetrieveUpdateDeleteSinglePacking(id):
+    packing_ = Packing.query.filter_by(packing_id=id).first()
+    if request.method == 'GET':
+        if packing_:
+            return str(packing_)
+        return f"Packing with id ={id} Doenst exist"
+    if request.method == 'POST':
+        if packing_:
+            packing_.shipment_id = request.form['shipment_id']
+            packing_.tags_cost = request.form['tags_cost']
+            packing_.label_cost = request.form['label_cost']
+            packing_.packege_cost = request.form['packege_cost']
+
+            db.session.add(packing_)
+            db.session.commit()
+            up = Packing.query.filter_by(packing_id=id).first()
+            return str(up)
+        return f"Packing with id = {id} Does nit exist"
+    if request.method == 'DELETE':
+        if packing_:
+            db.session.delete(packing_)
+            db.session.commit()
+            return 'deleted'
+        abort(404)
+    return str(packing_)
 
 @app.route('/jobs')
 def createJobs():
