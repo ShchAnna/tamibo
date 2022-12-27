@@ -47,7 +47,7 @@ def RetrieveUpdateDeleteSingleModel(id):
     model_ = ModelModel.query.filter_by(model_id=id).first()
     if request.method == 'GET':
         if model_:
-            return render_template('Model.html', model_)
+            return str(model_)
         return f"Model with id ={id} Doenst exist"
     if request.method == 'POST':
         if model_:
@@ -72,15 +72,51 @@ def RetrieveUpdateDeleteSingleModel(id):
         abort(404)
     return str(model_)
 
+@app.route('/shipment/create' , methods = ['GET','POST'])
+def CreateShipment():
+    if request.method == 'GET':
+        return render_template('createModel.html')
 
+    if request.method == 'POST':
+        model_id = request.form['model_id']
+        shipment_date = request.form['shipment_date']
+        products_number = request.form['products_number']
+        rulers_number = request.form['rulers_number']
+        NewShipment = shipment(model_id, shipment_date, products_number, rulers_number)
+        db.session.add(NewShipment)
+        db.session.commit()
+        return str(NewShipment)
 
-@app.route('/go')
-def createShipment():
-    shipment1 = shipment(model_id=2, products_number = 20, rulers_number=2)
-    db.session.add(shipment1)
-    db.session.commit()
-    return "go"
+@app.route('/shipment', methods=['GET'])
+def RetrieveShipmentList():
+    shipment_ = shipment.query.all()
+    return str(shipment_)
 
+@app.route('/shipment/<int:id>', methods = ['GET','POST', 'DELETE'])
+def RetrieveUpdateDeleteSingleShipment(id):
+    shipment_ = shipment.query.filter_by(shipment_id=id).first()
+    if request.method == 'GET':
+        if shipment_:
+            return str(shipment_)
+        return f"Shipment with id ={id} Doenst exist"
+    if request.method == 'POST':
+        if shipment_:
+            shipment_.model_id = request.form['model_id']
+            shipment_.shipment_date = request.form['shipment_date']
+            shipment_.products_number = request.form['products_number']
+            shipment_.rulers_number = request.form['rulers_number']
+            db.session.add(shipment_)
+            db.session.commit()
+            up = shipment.query.filter_by(shipment_id=id).first()
+            return str(up)
+        return f"Model with id = {id} Does nit exist"
+    if request.method == 'DELETE':
+        if shipment_:
+            db.session.delete(shipment_)
+            db.session.commit()
+            return 'deleted'
+        abort(404)
+    return str(shipment_)
 @app.route('/deliv')
 def createDeliv():
     delivery1 = Delivery(3, 'kudykina gora', 'tudykina gora','Papa Slava', 'Soks', 3000)
