@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, render_template, redirect
 from db_init import db
 
 from model import ModelModel, Sizes
@@ -20,12 +20,58 @@ db.init_app(app)
 def base():
     return "penis"
 
-@app.route('/test')
-def create():
-    model1 = ModelModel(model_name='sizestestsss', article_number='fjkljhgkhsghklf', size_range=[Sizes.M, Sizes.S])
-    db.session.add(model1)
-    db.session.commit()
-    return "good"
+@app.route('/model/create' , methods = ['GET','POST'])
+def CreateModel():
+    if request.method == 'GET':
+        return render_template('createModel.html')
+
+    if request.method == 'POST':
+        model_name = request.form['model_name']
+        article_number = request.form['article_number']
+        photo = request.form['photo']
+        layout_patterns = request.form['layout_patterns']
+        tailoring_technology = request.form['tailoring_technology']
+        size_range = request.form['size_range']
+        NewModel = ModelModel(model_name, article_number, photo, layout_patterns, tailoring_technology, size_range)
+        db.session.add(NewModel)
+        db.session.commit()
+        return redirect('/model')
+
+@app.route('/model')
+def RetrieveModelList():
+    model_ = ModelModel.query.all()
+    return str(model_)
+
+@app.route('/model/<int:id>')
+def RetrieveSingleModel(id):
+    model_ = ModelModel.query.filter_by(model_id=id).first()
+    if model_:
+        return render_template('Model.html', model_)
+    return f"Model with id ={id} Doenst exist"
+
+
+@app.route('/model/<int:id>/update', methods=['POST'])
+def UpdateModel(id):
+    model_ = ModelModel.query.filter_by(model_id=id).first()
+    if request.method == 'POST':
+        if model_:
+            model_.model_name = request.form['model_name']
+            model_.article_number = request.form['article_number']
+            model_.photo = bytearray(request.form['photo'], encoding = 'utf-8')
+            model_.layout_patterns = bytearray(request.form['layout_patterns'], encoding = 'utf-8')
+            model_.tailoring_technology = request.form['tailoring_technology']
+            model_.size_range = request.form['size_range']
+            #model_ = ModelModel(model_name, article_number, photo, layout_patterns, tailoring_technology, size_range)
+            #NewModel.model_id=id
+            db.session.add(model_)
+            db.session.commit()
+            up = ModelModel.query.filter_by(model_id=id).first()
+            return str(up)
+        return f"Model with id = {id} Does nit exist"
+
+    return render_template('ModelUpdate.html', model_)
+
+
 
 @app.route('/go')
 def createShipment():
