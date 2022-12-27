@@ -109,7 +109,7 @@ def RetrieveUpdateDeleteSingleShipment(id):
             db.session.commit()
             up = shipment.query.filter_by(shipment_id=id).first()
             return str(up)
-        return f"Model with id = {id} Does nit exist"
+        return f"Shipment with id = {id} Does nit exist"
     if request.method == 'DELETE':
         if shipment_:
             db.session.delete(shipment_)
@@ -117,12 +117,56 @@ def RetrieveUpdateDeleteSingleShipment(id):
             return 'deleted'
         abort(404)
     return str(shipment_)
-@app.route('/deliv')
-def createDeliv():
-    delivery1 = Delivery(3, 'kudykina gora', 'tudykina gora','Papa Slava', 'Soks', 3000)
-    db.session.add(delivery1)
-    db.session.commit()
-    return "Papa Slava doechal"
+
+@app.route('/delivery/create' , methods = ['GET','POST'])
+def CreateDelivery():
+    if request.method == 'GET':
+        return render_template('createModel.html')
+
+    if request.method == 'POST':
+        shipment_id = request.form['shipment_id']
+        from_where = request.form['from_where']
+        to_where = request.form['to_where']
+        tipe_delivery = request.form['tipe_delivery']
+        object_delivery = request.form['object_delivery']
+        delivery_cost = request.form['delivery_cost']
+        NewDelivery = Delivery(shipment_id, from_where, to_where, tipe_delivery, object_delivery, delivery_cost)
+        db.session.add(NewDelivery)
+        db.session.commit()
+        return str(NewDelivery)
+
+@app.route('/delivery', methods=['GET'])
+def RetrieveDeliveryList():
+    delivery_ = Delivery.query.all()
+    return str(delivery_)
+
+@app.route('/delivery/<int:id>', methods = ['GET','POST', 'DELETE'])
+def RetrieveUpdateDeleteSingleDelivery(id):
+    delivery_ = Delivery.query.filter_by(delivery_id=id).first()
+    if request.method == 'GET':
+        if delivery_:
+            return str(delivery_)
+        return f"Shipment with id ={id} Doenst exist"
+    if request.method == 'POST':
+        if delivery_:
+            delivery_.shipment_id = request.form['shipment_id']
+            delivery_.from_where = request.form['from_where']
+            delivery_.to_where = request.form['to_where']
+            delivery_.tipe_delivery = request.form['tipe_delivery']
+            delivery_.object_delivery = request.form['object_delivery']
+            delivery_.delivery_cost = request.form['delivery_cost']
+            db.session.add(delivery_)
+            db.session.commit()
+            up = Delivery.query.filter_by(delivery_id=id).first()
+            return str(up)
+        return f"Delivery with id = {id} Does nit exist"
+    if request.method == 'DELETE':
+        if delivery_:
+            db.session.delete(delivery_)
+            db.session.commit()
+            return 'deleted'
+        abort(404)
+    return str(delivery_)
 
 @app.route('/pack')
 def createPacking():
