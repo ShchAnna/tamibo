@@ -21,4 +21,4 @@ class Materials_cost(db.Model):
 
 
     def __repr__(self):
-        return f"{self.shipment_id}:{self.model_id}:{self.shipment_date}:{self.products_number}:{self.rulers_number}"
+        return f"{self.materials_cost_id}:{self.shipment_id}:{self.materials_id}:{self.materials_number}:{self.materials_cost}"

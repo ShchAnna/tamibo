@@ -37,4 +37,4 @@ class ModelModel(db.Model):
         self.size_range = size_range
 
     def __repr__(self):
-        return f"{self.model_name}:{self.article_number}:{self.model_id}"
+        return f"{self.model_id}:{self.model_name}:{self.article_number}"

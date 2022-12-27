@@ -19,4 +19,4 @@ class Accessories(db.Model):
 
 
     def __repr__(self):
-        return f"{self.shipment_id}:{self.model_id}:{self.shipment_date}:{self.products_number}:{self.rulers_number}"
+        return f"{self.accessories_id}:{self.model_id}:{self.accessories_name}:{self.number_per_one}"

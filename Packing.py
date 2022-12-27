@@ -23,4 +23,4 @@ class Packing(db.Model):
 
 
     def __repr__(self):
-        return f"{self.shipment_id}:{self.model_id}:{self.shipment_date}:{self.products_number}:{self.rulers_number}"
+        return f"{self.packing_id}:{self.shipment_id}:{self.tags_cost}:{self.label_cost}:{self.packege_cost}"

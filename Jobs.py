@@ -23,4 +23,4 @@ class Jobs(db.Model):
 
 
     def __repr__(self):
-        return f"{self.shipment_id}:{self.model_id}:{self.shipment_date}:{self.products_number}:{self.rulers_number}"
+        return f"{self.jobs_id}:{self.shipment_id}:{self.jobs_tipe}:{self.employee}:{self.jobs_cost}"
