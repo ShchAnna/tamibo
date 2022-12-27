@@ -13,7 +13,7 @@ CREATE TABLE model
     model_id integer NOT NULL GENERATED ALWAYS AS IDENTITY,
 	PRIMARY KEY(model_id),
     model_name text NOT NULL,
-    article_number text NOT NULL,
+    article_number text NOT NULL UNIQUE,
     photo bytea,
     layout_patterns bytea,
     tailoring_technology text,

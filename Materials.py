@@ -1,6 +1,6 @@
 from db_init import db
 from sqlalchemy.dialects.postgresql import (
-    INTEGER,
+    NUMERIC,
     TEXT
 )
 
@@ -10,7 +10,7 @@ class Materials(db.Model):
     materials_id = db.Column(db.INTEGER, primary_key=True)
     model_id = db.Column(db.INTEGER, db.ForeignKey('model.model_id'))
     materials_name = db.Column(TEXT, nullable=False)
-    m_per_ruler = db.Column(INTEGER, nullable=False)
+    m_per_ruler = db.Column(NUMERIC, nullable=False)
 
     def __init__(self, model_id, materials_name, m_per_ruler):
         self.model_id = model_id
