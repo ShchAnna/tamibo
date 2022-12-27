@@ -12,6 +12,11 @@ class shipment(db.Model):
     shipment_date = db.Column(DATE)
     products_number = db.Column(INTEGER)
     rulers_number = db.Column(INTEGER)
+    delivery = db.relationship('Delivery', cascade="all, delete")
+    packing = db.relationship('Packing', cascade="all, delete")
+    jobs = db.relationship('Jobs', cascade="all, delete")
+    accessories_cost = db.relationship('Accessories_cost', cascade="all, delete")
+    materials_cost = db.relationship('Materials_cost', cascade="all, delete")
 
     def __init__(self, model_id, shipment_date=None, products_number=None, rulers_number=None):
         self.model_id = model_id

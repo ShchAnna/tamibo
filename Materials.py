@@ -11,6 +11,7 @@ class Materials(db.Model):
     model_id = db.Column(db.INTEGER, db.ForeignKey('model.model_id'))
     materials_name = db.Column(TEXT, nullable=False)
     m_per_ruler = db.Column(NUMERIC, nullable=False)
+    materials_cost = db.relationship('Materials_cost', cascade="all, delete")
 
     def __init__(self, model_id, materials_name, m_per_ruler):
         self.model_id = model_id

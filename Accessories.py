@@ -11,6 +11,7 @@ class Accessories(db.Model):
     model_id = db.Column(db.INTEGER, db.ForeignKey('model.model_id'))
     accessories_name = db.Column(TEXT, nullable=False)
     number_per_one = db.Column(INTEGER, nullable=False)
+    accessories_cost = db.relationship('Accessories_cost', cascade="all, delete")
 
     def __init__(self, model_id, accessories_name, number_per_one):
         self.model_id = model_id

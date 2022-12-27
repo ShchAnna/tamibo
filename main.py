@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect
+from flask import Flask, request, render_template, redirect, abort
 from db_init import db
 
 from model import ModelModel, Sizes
@@ -28,31 +28,27 @@ def CreateModel():
     if request.method == 'POST':
         model_name = request.form['model_name']
         article_number = request.form['article_number']
-        photo = request.form['photo']
-        layout_patterns = request.form['layout_patterns']
+        photo = bytearray(request.form['photo'], encoding='utf-8')
+        layout_patterns = bytearray(request.form['layout_patterns'], encoding='utf-8')
         tailoring_technology = request.form['tailoring_technology']
         size_range = request.form['size_range']
         NewModel = ModelModel(model_name, article_number, photo, layout_patterns, tailoring_technology, size_range)
         db.session.add(NewModel)
         db.session.commit()
-        return redirect('/model')
+        return str(NewModel)
 
-@app.route('/model')
+@app.route('/model', methods=['GET'])
 def RetrieveModelList():
     model_ = ModelModel.query.all()
     return str(model_)
 
-@app.route('/model/<int:id>')
-def RetrieveSingleModel(id):
+@app.route('/model/<int:id>', methods = ['GET','POST', 'DELETE'])
+def RetrieveUpdateDeleteSingleModel(id):
     model_ = ModelModel.query.filter_by(model_id=id).first()
-    if model_:
-        return render_template('Model.html', model_)
-    return f"Model with id ={id} Doenst exist"
-
-
-@app.route('/model/<int:id>/update', methods=['POST'])
-def UpdateModel(id):
-    model_ = ModelModel.query.filter_by(model_id=id).first()
+    if request.method == 'GET':
+        if model_:
+            return render_template('Model.html', model_)
+        return f"Model with id ={id} Doenst exist"
     if request.method == 'POST':
         if model_:
             model_.model_name = request.form['model_name']
@@ -68,8 +64,13 @@ def UpdateModel(id):
             up = ModelModel.query.filter_by(model_id=id).first()
             return str(up)
         return f"Model with id = {id} Does nit exist"
-
-    return render_template('ModelUpdate.html', model_)
+    if request.method == 'DELETE':
+        if model_:
+            db.session.delete(model_)
+            db.session.commit()
+            return 'deleted'
+        abort(404)
+    return str(model_)
 
 
 
@@ -128,9 +129,7 @@ def createMaterialsCost():
     db.session.add(materials_cost1)
     db.session.commit()
     return "mnogo tkani"
-@app.route('/test/delete')
-def delete():
-    return "hui"
+
 
 
 if __name__ == '__main__':

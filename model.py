@@ -26,9 +26,10 @@ class ModelModel(db.Model):
     layout_patterns = db.Column(BYTEA)
     tailoring_technology = db.Column(TEXT)
     size_range = db.Column(ARRAY(ENUM(Sizes, name='size_ranges')))
-
-    def __init__(self, model_name, article_number, photo=None, layout_patterns=None, tailoring_technology=None,
-                 size_range=None):
+    shipment = db.relationship('shipment',  cascade="all, delete")
+    accessories = db.relationship('Accessories',  cascade="all, delete")
+    materials = db.relationship('Materials',  cascade="all, delete")
+    def __init__(self, model_name, article_number, photo=None, layout_patterns=None, tailoring_technology=None, size_range=None):
         self.model_name = model_name
         self.article_number = article_number
         self.photo = photo
