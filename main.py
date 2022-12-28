@@ -16,11 +16,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Sun580800@localho
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
+
 @app.route('/')
 def base():
     return "penis"
 
-@app.route('/model/create' , methods = ['GET','POST'])
+
+@app.route('/model/create', methods=['GET', 'POST'])
 def CreateModel():
     if request.method == 'GET':
         return render_template('createModel.html')
@@ -37,12 +39,14 @@ def CreateModel():
         db.session.commit()
         return str(NewModel)
 
+
 @app.route('/model', methods=['GET'])
 def RetrieveModelList():
     model_ = ModelModel.query.all()
     return str(model_)
 
-@app.route('/model/<int:id>', methods = ['GET','POST', 'DELETE'])
+
+@app.route('/model/<int:id>', methods=['GET', 'POST', 'DELETE'])
 def RetrieveUpdateDeleteSingleModel(id):
     model_ = ModelModel.query.filter_by(model_id=id).first()
     if request.method == 'GET':
@@ -53,12 +57,12 @@ def RetrieveUpdateDeleteSingleModel(id):
         if model_:
             model_.model_name = request.form['model_name']
             model_.article_number = request.form['article_number']
-            model_.photo = bytearray(request.form['photo'], encoding = 'utf-8')
-            model_.layout_patterns = bytearray(request.form['layout_patterns'], encoding = 'utf-8')
+            model_.photo = bytearray(request.form['photo'], encoding='utf-8')
+            model_.layout_patterns = bytearray(request.form['layout_patterns'], encoding='utf-8')
             model_.tailoring_technology = request.form['tailoring_technology']
             model_.size_range = request.form['size_range']
-            #model_ = ModelModel(model_name, article_number, photo, layout_patterns, tailoring_technology, size_range)
-            #NewModel.model_id=id
+            # model_ = ModelModel(model_name, article_number, photo, layout_patterns, tailoring_technology, size_range)
+            # NewModel.model_id=id
             db.session.add(model_)
             db.session.commit()
             up = ModelModel.query.filter_by(model_id=id).first()
@@ -72,7 +76,8 @@ def RetrieveUpdateDeleteSingleModel(id):
         abort(404)
     return str(model_)
 
-@app.route('/shipment/create' , methods = ['GET','POST'])
+
+@app.route('/shipment/create', methods=['GET', 'POST'])
 def CreateShipment():
     if request.method == 'GET':
         return render_template('createModel.html')
@@ -87,12 +92,14 @@ def CreateShipment():
         db.session.commit()
         return str(NewShipment)
 
+
 @app.route('/shipment', methods=['GET'])
 def RetrieveShipmentList():
     shipment_ = shipment.query.all()
     return str(shipment_)
 
-@app.route('/shipment/<int:id>', methods = ['GET','POST', 'DELETE'])
+
+@app.route('/shipment/<int:id>', methods=['GET', 'POST', 'DELETE'])
 def RetrieveUpdateDeleteSingleShipment(id):
     shipment_ = shipment.query.filter_by(shipment_id=id).first()
     if request.method == 'GET':
@@ -118,7 +125,8 @@ def RetrieveUpdateDeleteSingleShipment(id):
         abort(404)
     return str(shipment_)
 
-@app.route('/delivery/create' , methods = ['GET','POST'])
+
+@app.route('/delivery/create', methods=['GET', 'POST'])
 def CreateDelivery():
     if request.method == 'GET':
         return render_template('createModel.html')
@@ -135,12 +143,14 @@ def CreateDelivery():
         db.session.commit()
         return str(NewDelivery)
 
+
 @app.route('/delivery', methods=['GET'])
 def RetrieveDeliveryList():
     delivery_ = Delivery.query.all()
     return str(delivery_)
 
-@app.route('/delivery/<int:id>', methods = ['GET','POST', 'DELETE'])
+
+@app.route('/delivery/<int:id>', methods=['GET', 'POST', 'DELETE'])
 def RetrieveUpdateDeleteSingleDelivery(id):
     delivery_ = Delivery.query.filter_by(delivery_id=id).first()
     if request.method == 'GET':
@@ -168,7 +178,8 @@ def RetrieveUpdateDeleteSingleDelivery(id):
         abort(404)
     return str(delivery_)
 
-@app.route('/packing/create' , methods = ['GET','POST'])
+
+@app.route('/packing/create', methods=['GET', 'POST'])
 def CreatePacking():
     if request.method == 'GET':
         return render_template('createModel.html')
@@ -183,11 +194,14 @@ def CreatePacking():
         db.session.commit()
         return str(NewPacking)
 
+
 @app.route('/packing', methods=['GET'])
 def RetrievePackingList():
     packing_ = Packing.query.all()
     return str(packing_)
-@app.route('/packing/<int:id>', methods = ['GET','POST', 'DELETE'])
+
+
+@app.route('/packing/<int:id>', methods=['GET', 'POST', 'DELETE'])
 def RetrieveUpdateDeleteSinglePacking(id):
     packing_ = Packing.query.filter_by(packing_id=id).first()
     if request.method == 'GET':
@@ -214,7 +228,8 @@ def RetrieveUpdateDeleteSinglePacking(id):
         abort(404)
     return str(packing_)
 
-@app.route('/jobs/create' , methods = ['GET','POST'])
+
+@app.route('/jobs/create', methods=['GET', 'POST'])
 def CreateJobs():
     if request.method == 'GET':
         return render_template('createModel.html')
@@ -229,11 +244,14 @@ def CreateJobs():
         db.session.commit()
         return str(NewJobs)
 
+
 @app.route('/jobs', methods=['GET'])
 def RetrieveJobsList():
     jobs_ = Jobs.query.all()
     return str(jobs_)
-@app.route('/jobs/<int:id>', methods = ['GET','POST', 'DELETE'])
+
+
+@app.route('/jobs/<int:id>', methods=['GET', 'POST', 'DELETE'])
 def RetrieveUpdateDeleteSingleJobs(id):
     jobs_ = Jobs.query.filter_by(jobs_id=id).first()
     if request.method == 'GET':
@@ -260,7 +278,8 @@ def RetrieveUpdateDeleteSingleJobs(id):
         abort(404)
     return str(jobs_)
 
-@app.route('/accessories/create' , methods = ['GET','POST'])
+
+@app.route('/accessories/create', methods=['GET', 'POST'])
 def CreateAccessories():
     if request.method == 'GET':
         return render_template('createModel.html')
@@ -274,12 +293,14 @@ def CreateAccessories():
         db.session.commit()
         return str(NewAccessories)
 
+
 @app.route('/accessories', methods=['GET'])
 def RetrieveAccessoriesList():
     accessories_ = Accessories.query.all()
     return str(accessories_)
 
-@app.route('/accessories/<int:id>', methods = ['GET','POST', 'DELETE'])
+
+@app.route('/accessories/<int:id>', methods=['GET', 'POST', 'DELETE'])
 def RetrieveUpdateDeleteSingleAccessories(id):
     accessories_ = Accessories.query.filter_by(accessories_id=id).first()
     if request.method == 'GET':
@@ -291,7 +312,6 @@ def RetrieveUpdateDeleteSingleAccessories(id):
             accessories_.model_id = request.form['model_id']
             accessories_.accessories_name = request.form['accessories_name']
             accessories_.number_per_one = request.form['number_per_one']
-
 
             db.session.add(accessories_)
             db.session.commit()
@@ -307,7 +327,7 @@ def RetrieveUpdateDeleteSingleAccessories(id):
     return str(accessories_)
 
 
-@app.route('/accessories_cost/create' , methods = ['GET','POST'])
+@app.route('/accessories_cost/create', methods=['GET', 'POST'])
 def CreateAccessories_cost():
     if request.method == 'GET':
         return render_template('createModel.html')
@@ -322,7 +342,14 @@ def CreateAccessories_cost():
         db.session.commit()
         return str(NewAccessories_cost)
 
-@app.route('/accessories_cost/<int:id>', methods = ['GET','POST', 'DELETE'])
+
+@app.route('/accessories_cost', methods=['GET'])
+def RetrieveAccessories_costList():
+    accessories_cost_ = Accessories_cost.query.all()
+    return str(accessories_cost_)
+
+
+@app.route('/accessories_cost/<int:id>', methods=['GET', 'POST', 'DELETE'])
 def RetrieveUpdateDeleteSingleAccessories_cost(id):
     accessories_cost_ = Accessories_cost.query.filter_by(accessories_cost_id=id).first()
     if request.method == 'GET':
@@ -350,12 +377,103 @@ def RetrieveUpdateDeleteSingleAccessories_cost(id):
     return str(accessories_cost_)
 
 
-@app.route('/acc/cost')
-def createAccCost():
-    accessories_cost1 = Accessories_cost(3, 2, 100, 1200)
-    db.session.add(accessories_cost1)
-    db.session.commit()
-    return "money pugovak"
+@app.route('/materials/create', methods=['GET', 'POST'])
+def CreateMaterials():
+    if request.method == 'GET':
+        return render_template('createModel.html')
+
+    if request.method == 'POST':
+        model_id = request.form['model_id']
+        materials_name = request.form['materials_name']
+        m_per_ruler = request.form['m_per_ruler']
+        NewMaterials = Materials(model_id, materials_name, m_per_ruler)
+        db.session.add(NewMaterials)
+        db.session.commit()
+        return str(NewMaterials)
+
+
+@app.route('/materials', methods=['GET'])
+def RetrieveMaterialsList():
+    materials_ = Materials.query.all()
+    return str(materials_)
+
+
+@app.route('/materials/<int:id>', methods=['GET', 'POST', 'DELETE'])
+def RetrieveUpdateDeleteSingleMaterials(id):
+    materials_ = Materials.query.filter_by(materials_id=id).first()
+    if request.method == 'GET':
+        if materials_:
+            return str(materials_)
+        return f"Materials with id ={id} Doenst exist"
+    if request.method == 'POST':
+        if materials_:
+            materials_.model_id = request.form['model_id']
+            materials_.materials_name = request.form['materials_name']
+            materials_.m_per_ruler = request.form['m_per_ruler']
+
+            db.session.add(materials_)
+            db.session.commit()
+            up = Materials.query.filter_by(materials_id=id).first()
+            return str(up)
+        return f"Accessories with id = {id} Does nit exist"
+    if request.method == 'DELETE':
+        if materials_:
+            db.session.delete(materials_)
+            db.session.commit()
+            return 'deleted'
+        abort(404)
+    return str(materials_)
+
+
+@app.route('/materials_cost/create', methods=['GET', 'POST'])
+def CreateMaterials_cost():
+    if request.method == 'GET':
+        return render_template('createModel.html')
+
+    if request.method == 'POST':
+        shipment_id = request.form['shipment_id']
+        materials_id = request.form['materials_id']
+        materials_number = request.form['materials_number']
+        materials_cost = request.form['materials_cost']
+        NewMaterials_cost_ = Materials_cost(shipment_id, materials_id, materials_number, materials_cost)
+        db.session.add(NewMaterials_cost_)
+        db.session.commit()
+        return str(NewMaterials_cost_)
+
+
+@app.route('/materials_cost', methods=['GET'])
+def RetrieveMaterials_costList():
+    materials_cost_ = Materials_cost.query.all()
+    return str(materials_cost_)
+
+
+@app.route('/materials_cost/<int:id>', methods=['GET', 'POST', 'DELETE'])
+def RetrieveUpdateDeleteSingleMaterials_cost(id):
+    materials_cost_ = Materials_cost.query.filter_by(materials_cost_id=id).first()
+    if request.method == 'GET':
+        if materials_cost_:
+            return str(materials_cost_)
+        return f"Materials_cost with id ={id} Doenst exist"
+    if request.method == 'POST':
+        if materials_cost_:
+            materials_cost_.shipment_id = request.form['shipment_id']
+            materials_cost_.materials_id = request.form['materials_id']
+            materials_cost_.materials_number = request.form['materials_number']
+            materials_cost_.materials_cost = request.form['materials_cost']
+
+            db.session.add(materials_cost_)
+            db.session.commit()
+            up = Materials_cost.query.filter_by(materials_cost_id=id).first()
+            return str(up)
+        return f"Materials_cost with id = {id} Does nit exist"
+    if request.method == 'DELETE':
+        if materials_cost_:
+            db.session.delete(materials_cost_)
+            db.session.commit()
+            return 'deleted'
+        abort(404)
+    return str(materials_cost_)
+
 
 @app.route('/mat')
 def createMaterials():
@@ -364,13 +482,13 @@ def createMaterials():
     db.session.commit()
     return "mnogo tkani"
 
+
 @app.route('/mat/cost')
 def createMaterialsCost():
     materials_cost1 = Materials_cost(3, 2, 10, 20.1)
     db.session.add(materials_cost1)
     db.session.commit()
     return "mnogo tkani"
-
 
 
 if __name__ == '__main__':
