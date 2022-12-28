@@ -2,7 +2,7 @@ from db_init import db
 from sqlalchemy.dialects.postgresql import (
     INTEGER,
     TEXT,
-    MONEY
+    NUMERIC
 )
 
 class Delivery(db.Model):
@@ -14,7 +14,7 @@ class Delivery(db.Model):
     to_where = db.Column(TEXT, nullable=False)
     tipe_delivery = db.Column(TEXT, nullable=False)
     object_delivery = db.Column(TEXT, nullable=False)
-    delivery_cost = db.Column(MONEY, nullable=False)
+    delivery_cost = db.Column(NUMERIC, nullable=False)
 
 
     def __init__(self, shipment_id, from_where, to_where, tipe_delivery, object_delivery, delivery_cost):

@@ -2,7 +2,7 @@ from db_init import db
 from sqlalchemy.dialects.postgresql import (
     INTEGER,
     TEXT,
-    MONEY
+    NUMERIC
 )
 
 class Packing(db.Model):
@@ -10,9 +10,9 @@ class Packing(db.Model):
 
     packing_id = db.Column(db.INTEGER, primary_key=True)
     shipment_id = db.Column(db.INTEGER, db.ForeignKey('shipment.shipment_id'))
-    tags_cost = db.Column(MONEY, nullable=False)
-    label_cost = db.Column(MONEY, nullable=False)
-    packege_cost = db.Column(MONEY, nullable=False)
+    tags_cost = db.Column(NUMERIC, nullable=False)
+    label_cost = db.Column(NUMERIC, nullable=False)
+    packege_cost = db.Column(NUMERIC, nullable=False)
 
     def __init__(self, shipment_id, tags_cost, label_cost, packege_cost):
         self.shipment_id = shipment_id

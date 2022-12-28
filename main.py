@@ -1,3 +1,5 @@
+import decimal
+
 from flask import Flask, request, render_template, redirect, abort
 from db_init import db
 
@@ -10,6 +12,10 @@ from Accessories import Accessories
 from Materials import Materials
 from Accessories_cost import Accessories_cost
 from Materials_cost import Materials_cost
+
+from sqlalchemy.dialects.postgresql import (
+    MONEY
+)
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Sun580800@localhost/tamibo'
@@ -474,22 +480,21 @@ def RetrieveUpdateDeleteSingleMaterials_cost(id):
         abort(404)
     return str(materials_cost_)
 
+@app.route('/document/cost_price/<int:id>', methods=['GET'])
+def Cost_price(id):
+    if request.method == 'GET':
+        delivery_cost = 0.0
+        deliveries = db.session.query(Delivery).filter_by(shipment_id=id).all()
+        countDelivery = db.session.query(Delivery).filter_by(shipment_id=id).count()
+        for i in range(countDelivery):
+            delivery_cost = delivery_cost + float(deliveries[0].delivery_cost)
 
-@app.route('/mat')
-def createMaterials():
-    materials1 = Materials(3, 'pugovka', 2.1)
-    db.session.add(materials1)
-    db.session.commit()
-    return "mnogo tkani"
-
-
-@app.route('/mat/cost')
-def createMaterialsCost():
-    materials_cost1 = Materials_cost(3, 2, 10, 20.1)
-    db.session.add(materials_cost1)
-    db.session.commit()
-    return "mnogo tkani"
-
+        jobs_cost = 0.0
+        jobses = db.session.query(Jobs).filter_by(shipment_id=id).all()
+        countJobs = db.session.query(Jobs).filter_by(shipment_id=id).count()
+        for i in range(countDelivery):
+            jobs_cost = jobs_cost + float(jobses[0].jobs_cost)
+        return str(delivery_cost)
 
 if __name__ == '__main__':
     app.run(host='localhost', port=5000)

@@ -42,7 +42,7 @@ CREATE TABLE delivery
     to_where text NOT NULL,
     tipe_delivery text NOT NULL,
     object_delivery text NOT NULL,
-    delivery_cost money NOT NULL
+    delivery_cost numeric NOT NULL
 );
 
 CREATE TABLE packing
@@ -51,9 +51,9 @@ CREATE TABLE packing
 	PRIMARY KEY(packing_id),
     shipment_id integer NOT NULL,
 	FOREIGN KEY (shipment_id ) REFERENCES shipment  (shipment_id ),
-    tags_cost money NOT NULL,
-    label_cost money NOT NULL,
-    packege_cost money NOT NULL
+    tags_cost numeric NOT NULL,
+    label_cost numeric NOT NULL,
+    packege_cost numeric NOT NULL
 );
 
 CREATE TABLE jobs
@@ -64,7 +64,7 @@ CREATE TABLE jobs
 	FOREIGN KEY (shipment_id ) REFERENCES shipment  (shipment_id ),
     jobs_tipe text NOT NULL,
     employee text NOT NULL,
-    jobs_cost money NOT NULL
+    jobs_cost numeric NOT NULL
 );
 
 CREATE TABLE accessories
@@ -96,7 +96,7 @@ CREATE TABLE accessories_cost
     accessories_id integer NOT NULL,
 	FOREIGN KEY (accessories_id) REFERENCES accessories (accessories_id),
     accessories_number integer NOT NULL,
-    accessories_cost money NOT NULL
+    accessories_cost numeric NOT NULL
 );
 
 CREATE TABLE materials_cost
@@ -108,5 +108,5 @@ CREATE TABLE materials_cost
     materials_id integer NOT NULL,
 	FOREIGN KEY (materials_id) REFERENCES materials (materials_id),
     materials_number numeric NOT NULL,
-    materials_cost money NOT NULL
+    materials_cost numeric NOT NULL
 );

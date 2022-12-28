@@ -1,7 +1,7 @@
 from db_init import db
 from sqlalchemy.dialects.postgresql import (
     INTEGER,
-    MONEY
+    NUMERIC
 )
 
 class Accessories_cost(db.Model):
@@ -11,7 +11,7 @@ class Accessories_cost(db.Model):
     shipment_id = db.Column(db.INTEGER, db.ForeignKey('shipment.shipment_id'))
     accessories_id = db.Column(db.INTEGER, db.ForeignKey('accessories.accessories_id'))
     accessories_number = db.Column(INTEGER, nullable=False)
-    accessories_cost = db.Column(MONEY, nullable=False)
+    accessories_cost = db.Column(NUMERIC, nullable=False)
 
     def __init__(self, shipment_id, accessories_id, accessories_number, accessories_cost):
         self.shipment_id = shipment_id
