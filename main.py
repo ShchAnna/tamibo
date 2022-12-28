@@ -306,6 +306,50 @@ def RetrieveUpdateDeleteSingleAccessories(id):
         abort(404)
     return str(accessories_)
 
+
+@app.route('/accessories_cost/create' , methods = ['GET','POST'])
+def CreateAccessories_cost():
+    if request.method == 'GET':
+        return render_template('createModel.html')
+
+    if request.method == 'POST':
+        shipment_id = request.form['shipment_id']
+        accessories_id = request.form['accessories_id']
+        accessories_number = request.form['accessories_number']
+        accessories_cost = request.form['accessories_cost']
+        NewAccessories_cost = Accessories_cost(shipment_id, accessories_id, accessories_number, accessories_cost)
+        db.session.add(NewAccessories_cost)
+        db.session.commit()
+        return str(NewAccessories_cost)
+
+@app.route('/accessories_cost/<int:id>', methods = ['GET','POST', 'DELETE'])
+def RetrieveUpdateDeleteSingleAccessories_cost(id):
+    accessories_cost_ = Accessories_cost.query.filter_by(accessories_cost_id=id).first()
+    if request.method == 'GET':
+        if accessories_cost_:
+            return str(accessories_cost_)
+        return f"Accessories_cost with id ={id} Doenst exist"
+    if request.method == 'POST':
+        if accessories_cost_:
+            accessories_cost_.shipment_id = request.form['shipment_id']
+            accessories_cost_.accessories_id = request.form['accessories_id']
+            accessories_cost_.accessories_number = request.form['accessories_number']
+            accessories_cost_.accessories_cost = request.form['accessories_cost']
+
+            db.session.add(accessories_cost_)
+            db.session.commit()
+            up = Accessories_cost.query.filter_by(accessories_cost_id=id).first()
+            return str(up)
+        return f"Accessories_cost with id = {id} Does nit exist"
+    if request.method == 'DELETE':
+        if accessories_cost_:
+            db.session.delete(accessories_cost_)
+            db.session.commit()
+            return 'deleted'
+        abort(404)
+    return str(accessories_cost_)
+
+
 @app.route('/acc/cost')
 def createAccCost():
     accessories_cost1 = Accessories_cost(3, 2, 100, 1200)
