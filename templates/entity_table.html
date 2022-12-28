@@ -1,7 +1,6 @@
 {% extends "index.html" %}
 {% block content %}
 <h1>{{ page.title }}</h1>
-<div> {{ list }}</div>
 <table class="table">
     <thead>
     <tr>
@@ -11,15 +10,24 @@
     </tr>
     </thead>
     <tbody>
+    {% if t.rows %}
     {% for row in t.rows %}
     <tr>
-        {% for item in row.items %}
+        {% for key, value in row.items() %}
         <td>
-            {{ item.val }}
+            {% if value %}
+            {{value}}
+            {% endif %}
         </td>
         {% endfor %}
+        <td>
+            <form action="{{ page.link }}/{{row.items()|first|last}}/delete" enctype="multipart/form-data" method="POST">
+                    <input type="submit" class="btn btn-danger" value="Удалить">
+            </form>
+        </td>
     </tr>
     {% endfor %}
+    {% endif %}
     </tbody>
 </table>
 {% endblock %}

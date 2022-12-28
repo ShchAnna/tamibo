@@ -1,9 +1,11 @@
 import decimal
 
-from flask import Flask, request, render_template, redirect, abort
+from flask import Flask, request, render_template, redirect, abort, url_for
+from sqlalchemy import inspect
+
 from db_init import db
 
-from model import ModelModel, Sizes
+from models.model import ModelModel, Sizes
 from Shipment import shipment
 from Delivery import Delivery
 from Packing import Packing
@@ -18,10 +20,20 @@ from sqlalchemy.dialects.postgresql import (
 )
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Sun580800@localhost/tamibo'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/tamibo'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
+
+def doGetAll(model):
+    q = db.select(model)
+    print(q)
+    result = db.session.execute(q).scalars().all()
+    result = [row.to_dict() for row in result]
+
+    insp = inspect(ModelModel)
+    headers = [c_attr.key for c_attr in insp.mapper.column_attrs]
+    return headers, result
 
 @app.route('/')
 def base():
@@ -48,8 +60,11 @@ def CreateModel():
 
 @app.route('/model', methods=['GET'])
 def RetrieveModelList():
-    model_ = ModelModel.query.all()
-    return str(model_)
+    # model_ = ModelModel.query(ModelModel.model_id, ModelModel.model_name).all()
+    headers, result = doGetAll(ModelModel)
+    return render_template("entity_table.html",
+                           page={'title': 'Ассортимент', 'link': '/model'},
+                           t={'headers': headers, 'rows': result})
 
 
 @app.route('/model/<int:id>', methods=['GET', 'POST', 'DELETE'])
@@ -78,9 +93,19 @@ def RetrieveUpdateDeleteSingleModel(id):
         if model_:
             db.session.delete(model_)
             db.session.commit()
-            return 'deleted'
+            return redirect(url_for('/model'))
         abort(404)
     return str(model_)
+
+
+@app.route('/model/<int:id>/delete', methods=['POST'])
+def deleteModel(id):
+    model_ = ModelModel.query.filter_by(model_id=id).first()
+    if model_:
+        db.session.delete(model_)
+        db.session.commit()
+        return redirect(url_for('RetrieveModelList'))
+    abort(404)
 
 
 @app.route('/shipment/create', methods=['GET', 'POST'])
@@ -480,6 +505,7 @@ def RetrieveUpdateDeleteSingleMaterials_cost(id):
         abort(404)
     return str(materials_cost_)
 
+
 @app.route('/document/cost_price/<int:id>', methods=['GET'])
 def Cost_price(id):
     if request.method == 'GET':
@@ -495,6 +521,7 @@ def Cost_price(id):
         for i in range(countDelivery):
             jobs_cost = jobs_cost + float(jobses[0].jobs_cost)
         return str(delivery_cost)
+
 
 if __name__ == '__main__':
     app.run(host='localhost', port=5000)
