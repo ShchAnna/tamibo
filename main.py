@@ -30,8 +30,8 @@ def CreateModel():
     if request.method == 'POST':
         model_name = request.form['model_name']
         article_number = request.form['article_number']
-        photo = bytearray(request.form['photo'], encoding='utf-8')
-        layout_patterns = bytearray(request.form['layout_patterns'], encoding='utf-8')
+        photo = request.form['photo']
+        layout_patterns = request.form['layout_patterns']
         tailoring_technology = request.form['tailoring_technology']
         size_range = request.form['size_range']
         NewModel = ModelModel(model_name, article_number, photo, layout_patterns, tailoring_technology, size_range)
@@ -57,8 +57,8 @@ def RetrieveUpdateDeleteSingleModel(id):
         if model_:
             model_.model_name = request.form['model_name']
             model_.article_number = request.form['article_number']
-            model_.photo = bytearray(request.form['photo'], encoding='utf-8')
-            model_.layout_patterns = bytearray(request.form['layout_patterns'], encoding='utf-8')
+            model_.photo = request.form['photo']
+            model_.layout_patterns = request.form['layout_patterns']
             model_.tailoring_technology = request.form['tailoring_technology']
             model_.size_range = request.form['size_range']
             # model_ = ModelModel(model_name, article_number, photo, layout_patterns, tailoring_technology, size_range)

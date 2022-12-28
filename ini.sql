@@ -14,8 +14,8 @@ CREATE TABLE model
 	PRIMARY KEY(model_id),
     model_name text NOT NULL,
     article_number text NOT NULL UNIQUE,
-    photo bytea,
-    layout_patterns bytea,
+    photo text,
+    layout_patterns text,
     tailoring_technology text,
     size_range size_ranges[]
 
