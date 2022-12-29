@@ -110,3 +110,12 @@ CREATE TABLE materials_cost
     materials_number numeric NOT NULL,
     materials_cost numeric NOT NULL
 );
+
+CREATE TABLE users
+(
+	user_id integer NOT NULL GENERATED ALWAYS AS IDENTITY,
+    PRIMARY KEY(user_id),
+	name_ text,
+	email text NOT NULL UNIQUE,
+	psw text NOT NULL UNIQUE
+)

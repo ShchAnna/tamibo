@@ -1,6 +1,9 @@
+from User import User
 from flask import Flask, request, render_template, redirect, abort, url_for
+from sqlalchemy.dialects import postgresql
 from sqlalchemy import inspect
-
+from werkzeug.security import generate_password_hash
+from flask_login import LoginManager
 from db_init import db
 
 from models.Model import ModelModel
@@ -14,10 +17,11 @@ from models.Accessories_cost import Accessories_cost
 from models.Materials_cost import Materials_cost
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/tamibo'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Sun580800@localhost/tamibo'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
+login_manager = LoginManager(app)
 
 def doGetAll(model):
     q = db.select(model)
@@ -523,9 +527,67 @@ def Cost_price(id):
         jobs_cost = 0.0
         jobses = db.session.query(Jobs).filter_by(shipment_id=id).all()
         countJobs = db.session.query(Jobs).filter_by(shipment_id=id).count()
-        for i in range(countDelivery):
+        for i in range(countJobs):
             jobs_cost = jobs_cost + float(jobses[0].jobs_cost)
-        return str(delivery_cost)
+
+        packing_cost = 0.0
+        packings = db.session.query(Packing).filter_by(shipment_id=id).all()
+        countPacking = db.session.query(Packing).filter_by(shipment_id=id).count()
+        for i in range(countPacking):
+            packing_cost = packing_cost + float(packings[0].tags_cost) + float(packings[0].label_cost) + float(packings[0].packege_cost)
+
+        accessories_cost = 0.0
+        accessories_costes = db.session.query(Accessories_cost).filter_by(shipment_id=id).all()
+        countAccessories_cost = db.session.query(Accessories_cost).filter_by(shipment_id=id).count()
+        for i in range(countAccessories_cost):
+            accessories_cost = accessories_cost + float(accessories_costes[0].accessories_cost)
+
+        materials_cost = 0.0
+        materials_costes = db.session.query(Materials_cost).filter_by(shipment_id=id).all()
+        countMaterials_cost = db.session.query(Materials_cost).filter_by(shipment_id=id).count()
+        for i in range(countMaterials_cost):
+            materials_cost = materials_cost + float(materials_costes[0].materials_cost)
+
+        cost_price = delivery_cost + jobs_cost + packing_cost + accessories_cost + materials_cost
+
+        return str(cost_price)
+
+@app.route("/login")
+def login():
+    return 0
+
+def addUser(name, email, hpsw):
+    try:
+        user_ = User.query.filter_by(email=email).first()
+        if user_:
+            print("Пользователь с таким email уже существует")
+            return False
+
+        NewUser = User(name, email, hpsw)
+        db.session.add(NewUser)
+        db.session.commit()
+    except postgresql.Error as e:
+        print("Ошибка добавления пользователя в БД " + str(e))
+        return False
+
+    return True
+@app.route("/register", methods=["POST", "GET"])
+def register():
+    if request.method == "POST":
+        if len(request.form['name']) > 2 and len(request.form['email']) > 4 \
+                and len(request.form['psw']) > 4 and request.form['psw'] == request.form['psw2']:
+            hash = generate_password_hash(request.form['psw'])
+            res = addUser(request.form['name'], request.form['email'], hash)
+            if res:
+                return redirect(url_for('login'))
+            else:
+                return "Ошибка при добавлении в БД", "error"
+        else:
+            return "Неверно заполнены поля", "error"
+
+    return 0
+
+
 
 
 if __name__ == '__main__':
