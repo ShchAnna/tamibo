@@ -2,8 +2,10 @@ from User import User
 from flask import Flask, request, render_template, redirect, abort, url_for
 from sqlalchemy.dialects import postgresql
 from sqlalchemy import inspect
-from werkzeug.security import generate_password_hash
-from flask_login import LoginManager
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, login_user
+
+from UserLogin import UserLogin
 from db_init import db
 
 from models.Model import ModelModel
@@ -33,6 +35,11 @@ def doGetAll(model):
     headers = [c_attr.key for c_attr in insp.mapper.column_attrs]
     return headers, result
 
+
+@login_manager.user_loader
+def load_user(user_id):
+    print("load_user")
+    return UserLogin().fromDB(user_id, db)
 
 @app.route('/')
 def base():
@@ -552,25 +559,46 @@ def Cost_price(id):
 
         return str(cost_price)
 
+def getUser(user_id):
+    res = db.session.query(User).filter_by(user_id = user_id).first()
+    if not res:
+        print("Пользователь не найден")
+        return False
 
-@app.route("/login")
+    return res
+
+def getUserByEmail(email):
+    res = db.session.query(User).filter_by(email = email).first()
+    if not res:
+        print("Пользователь не найден")
+        return False
+
+    return res
+
+
+@app.route("/login", methods=["POST", "GET"])
 def login():
+    if request.method == "POST":
+        user = getUserByEmail(request.form['email'])
+        if user and check_password_hash(user['psw'], request.form['psw']):
+            userlogin = UserLogin().create(user)
+            login_user(userlogin)
+            return redirect(url_for('index'))
+
+        return"Неверная пара логин/пароль", "error"
+
     return 0
 
 
 def addUser(name, email, hpsw):
-    try:
-        user_ = User.query.filter_by(email=email).first()
-        if user_:
-            print("Пользователь с таким email уже существует")
-            return False
-
-        NewUser = User(name, email, hpsw)
-        db.session.add(NewUser)
-        db.session.commit()
-    except postgresql.Error as e:
-        print("Ошибка добавления пользователя в БД " + str(e))
+    user_ = User.query.filter_by(email=email).first()
+    if user_:
+        print("Пользователь с таким email уже существует")
         return False
+
+    NewUser = User(name, email, hpsw)
+    db.session.add(NewUser)
+    db.session.commit()
 
     return True
 
