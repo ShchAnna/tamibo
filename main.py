@@ -1,5 +1,7 @@
 from User import User
 from flask import Flask, request, render_template, redirect, abort, url_for
+
+import flask_excel as excel
 from sqlalchemy.dialects import postgresql
 from sqlalchemy import inspect
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -19,6 +21,7 @@ from models.Accessories_cost import Accessories_cost
 from models.Materials_cost import Materials_cost
 
 app = Flask(__name__)
+excel.init_excel(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/tamibo'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
@@ -28,18 +31,18 @@ login_manager = LoginManager(app)
 
 def doGetAll(model):
     q = db.select(model)
-    result = db.session.execute(q).scalars().all()
-    result = [row.to_dict() for row in result]
+    return db.session.execute(q).scalars().all()
 
-    insp = inspect(model)
-    headers = [c_attr.key for c_attr in insp.mapper.column_attrs]
-    return headers, result
+
+def get_attrs_names(model):
+    return [c_attr.key for c_attr in inspect(model).mapper.column_attrs]
 
 
 @login_manager.user_loader
 def load_user(user_id):
     print("load_user")
     return UserLogin().fromDB(user_id, db)
+
 
 @app.route('/')
 def base():
@@ -67,8 +70,16 @@ def CreateModel():
 @app.route('/model', methods=['GET'])
 def RetrieveModelList():
     # model_ = ModelModel.query(ModelModel.model_id, ModelModel.model_name).all()
-    headers, result = doGetAll(ModelModel)
+    result = doGetAll(ModelModel)
     return render_template("models_template.html", rows=result)
+
+
+@app.route('/model/download', methods=['GET'])
+def dowload():
+    result = doGetAll(ModelModel)
+    headers = [c_attr.key for c_attr in inspect(ModelModel).mapper.column_attrs]
+    return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
+                                               file_name='sukarabotai')
 
 
 @app.route('/model/<int:id>', methods=['GET', 'POST', 'DELETE'])
@@ -559,16 +570,18 @@ def Cost_price(id):
 
         return str(cost_price)
 
+
 def getUser(user_id):
-    res = db.session.query(User).filter_by(user_id = user_id).first()
+    res = db.session.query(User).filter_by(user_id=user_id).first()
     if not res:
         print("Пользователь не найден")
         return False
 
     return res
 
+
 def getUserByEmail(email):
-    res = db.session.query(User).filter_by(email = email).first()
+    res = db.session.query(User).filter_by(email=email).first()
     if not res:
         print("Пользователь не найден")
         return False
@@ -585,7 +598,7 @@ def login():
             login_user(userlogin)
             return redirect(url_for('index'))
 
-        return"Неверная пара логин/пароль", "error"
+        return "Неверная пара логин/пароль", "error"
 
     return 0
 
