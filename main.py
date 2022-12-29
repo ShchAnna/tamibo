@@ -17,11 +17,12 @@ from models.Accessories_cost import Accessories_cost
 from models.Materials_cost import Materials_cost
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Sun580800@localhost/tamibo'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/tamibo'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
 login_manager = LoginManager(app)
+
 
 def doGetAll(model):
     q = db.select(model)
@@ -60,9 +61,7 @@ def CreateModel():
 def RetrieveModelList():
     # model_ = ModelModel.query(ModelModel.model_id, ModelModel.model_name).all()
     headers, result = doGetAll(ModelModel)
-    return render_template("entity_table.html",
-                           page={'title': 'Ассортимент', 'link': '/model'},
-                           t={'headers': headers, 'rows': result})
+    return render_template("models_template.html", rows=result)
 
 
 @app.route('/model/<int:id>', methods=['GET', 'POST', 'DELETE'])
@@ -534,7 +533,8 @@ def Cost_price(id):
         packings = db.session.query(Packing).filter_by(shipment_id=id).all()
         countPacking = db.session.query(Packing).filter_by(shipment_id=id).count()
         for i in range(countPacking):
-            packing_cost = packing_cost + float(packings[0].tags_cost) + float(packings[0].label_cost) + float(packings[0].packege_cost)
+            packing_cost = packing_cost + float(packings[0].tags_cost) + float(packings[0].label_cost) + float(
+                packings[0].packege_cost)
 
         accessories_cost = 0.0
         accessories_costes = db.session.query(Accessories_cost).filter_by(shipment_id=id).all()
@@ -552,9 +552,11 @@ def Cost_price(id):
 
         return str(cost_price)
 
+
 @app.route("/login")
 def login():
     return 0
+
 
 def addUser(name, email, hpsw):
     try:
@@ -571,6 +573,8 @@ def addUser(name, email, hpsw):
         return False
 
     return True
+
+
 @app.route("/register", methods=["POST", "GET"])
 def register():
     if request.method == "POST":
@@ -586,8 +590,6 @@ def register():
             return "Неверно заполнены поля", "error"
 
     return 0
-
-
 
 
 if __name__ == '__main__':

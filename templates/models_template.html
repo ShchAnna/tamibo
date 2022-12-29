@@ -1,0 +1,22 @@
+{% extends "table_template.html" %}
+{% block tname %}Ассортимент{% endblock tname%}
+{% block theaders %}
+    <th>Наименование</th>
+    <th>Артикул</th>
+    <th>Фото</th>
+    <th>Технология пошива</th>
+    <th>Размеры</th>
+{% endblock theaders %}
+{% block trows %}
+    {% for row in rows %}
+        <td>{{ row.arcticle_number }}</td>
+        <td>{{ row.photo }}</td>
+        <td>{{ row.layout_patterns }}</td>
+        <td>{% for size in row.sizes %}{{ size }}, {% endfor %}</td>
+        <td>
+            <form action="/mode/{{ row.model_id }}/delete" enctype="multipart/form-data" method="POST">
+                    <input type="submit" class="btn btn-danger" value="Удалить">
+            </form>
+        </td>
+    {% endfor %}
+{% endblock trows %}

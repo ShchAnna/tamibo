@@ -1,0 +1,15 @@
+{% extends "index.html" %}
+{% block content %}
+    <h1>{% block tname %}{% endblock %}</h1>>
+    <table class="table">
+        <thead>
+        <tr>
+            {% block theaders %}{% endblock %}
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% block trows %}{% endblock %}
+        </tbody>
+    </table>
+{% endblock %}
