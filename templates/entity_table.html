@@ -1,0 +1,34 @@
+{% extends "index.html" %}
+{% block content %}
+<h1>{{ page.title }}</h1>
+<table class="table">
+    <thead>
+    <tr>
+        {% for header in t.headers %}
+        <th> {{ header }}</th>
+        {% endfor %}
+        <th>Действия<th>
+    </tr>
+    </thead>
+    <tbody>
+    {% if t.rows %}
+    {% for row in t.rows %}
+    <tr>
+        {% for key, value in row.items() %}
+        <td>
+            {% if value %}
+            {{value}}
+            {% endif %}
+        </td>
+        {% endfor %}
+        <td>
+            <form action="{{ page.link }}/{{row.items()|first|last}}/delete" enctype="multipart/form-data" method="POST">
+                    <input type="submit" class="btn btn-danger" value="Удалить">
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+    </tbody>
+</table>
+{% endblock %}

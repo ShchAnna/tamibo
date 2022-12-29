@@ -5,6 +5,7 @@ from sqlalchemy.dialects.postgresql import (
     NUMERIC
 )
 
+
 class Delivery(db.Model):
     __tablename__ = "delivery"
 
@@ -16,7 +17,6 @@ class Delivery(db.Model):
     object_delivery = db.Column(TEXT, nullable=False)
     delivery_cost = db.Column(NUMERIC, nullable=False)
 
-
     def __init__(self, shipment_id, from_where, to_where, tipe_delivery, object_delivery, delivery_cost):
         self.shipment_id = shipment_id
         self.from_where = from_where
@@ -27,3 +27,6 @@ class Delivery(db.Model):
 
     def __repr__(self):
         return f"{self.delivery_id}:{self.shipment_id}:{self.from_where}:{self.to_where}:{self.tipe_delivery}:{self.object_delivery}:{self.delivery_cost}"
+
+    def to_dict(self):
+        return {c.name: getattr(self, c.name, None) for c in self.__table__.columns}
