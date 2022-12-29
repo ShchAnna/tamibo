@@ -2,6 +2,7 @@ from User import User
 from flask import Flask, request, render_template, redirect, abort, url_for
 from sqlalchemy.dialects import postgresql
 from werkzeug.security import generate_password_hash
+from flask_login import LoginManager
 from db_init import db
 
 from model import ModelModel
@@ -19,6 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Sun580800@localho
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
+login_manager = LoginManager(app)
 
 @app.route('/')
 def base():
