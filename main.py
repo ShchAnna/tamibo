@@ -1,23 +1,17 @@
-import decimal
-
 from flask import Flask, request, render_template, redirect, abort, url_for
 from sqlalchemy import inspect
 
 from db_init import db
 
-from models.model import ModelModel, Sizes
-from Shipment import shipment
-from Delivery import Delivery
-from Packing import Packing
-from Jobs import Jobs
-from Accessories import Accessories
-from Materials import Materials
-from Accessories_cost import Accessories_cost
-from Materials_cost import Materials_cost
-
-from sqlalchemy.dialects.postgresql import (
-    MONEY
-)
+from models.Model import ModelModel
+from models.Shipment import Shipment
+from models.Delivery import Delivery
+from models.Packing import Packing
+from models.Jobs import Jobs
+from models.Accessories import Accessories
+from models.Materials import Materials
+from models.Accessories_cost import Accessories_cost
+from models.Materials_cost import Materials_cost
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/tamibo'
@@ -27,13 +21,13 @@ db.init_app(app)
 
 def doGetAll(model):
     q = db.select(model)
-    print(q)
     result = db.session.execute(q).scalars().all()
     result = [row.to_dict() for row in result]
 
-    insp = inspect(ModelModel)
+    insp = inspect(model)
     headers = [c_attr.key for c_attr in insp.mapper.column_attrs]
     return headers, result
+
 
 @app.route('/')
 def base():
@@ -89,12 +83,6 @@ def RetrieveUpdateDeleteSingleModel(id):
             up = ModelModel.query.filter_by(model_id=id).first()
             return str(up)
         return f"Model with id = {id} Does nit exist"
-    if request.method == 'DELETE':
-        if model_:
-            db.session.delete(model_)
-            db.session.commit()
-            return redirect(url_for('/model'))
-        abort(404)
     return str(model_)
 
 
@@ -118,7 +106,7 @@ def CreateShipment():
         shipment_date = request.form['shipment_date']
         products_number = request.form['products_number']
         rulers_number = request.form['rulers_number']
-        NewShipment = shipment(model_id, shipment_date, products_number, rulers_number)
+        NewShipment = Shipment(model_id, shipment_date, products_number, rulers_number)
         db.session.add(NewShipment)
         db.session.commit()
         return str(NewShipment)
@@ -126,13 +114,15 @@ def CreateShipment():
 
 @app.route('/shipment', methods=['GET'])
 def RetrieveShipmentList():
-    shipment_ = shipment.query.all()
-    return str(shipment_)
+    headers, result = doGetAll(Shipment)
+    return render_template("entity_table.html",
+                           page={'title': 'Партии', 'link': '/shipment'},
+                           t={'headers': headers, 'rows': result})
 
 
-@app.route('/shipment/<int:id>', methods=['GET', 'POST', 'DELETE'])
+@app.route('/shipment/<int:id>', methods=['GET', 'POST'])
 def RetrieveUpdateDeleteSingleShipment(id):
-    shipment_ = shipment.query.filter_by(shipment_id=id).first()
+    shipment_ = Shipment.query.filter_by(shipment_id=id).first()
     if request.method == 'GET':
         if shipment_:
             return str(shipment_)
@@ -145,16 +135,19 @@ def RetrieveUpdateDeleteSingleShipment(id):
             shipment_.rulers_number = request.form['rulers_number']
             db.session.add(shipment_)
             db.session.commit()
-            up = shipment.query.filter_by(shipment_id=id).first()
+            up = Shipment.query.filter_by(shipment_id=id).first()
             return str(up)
         return f"Shipment with id = {id} Does nit exist"
-    if request.method == 'DELETE':
-        if shipment_:
-            db.session.delete(shipment_)
-            db.session.commit()
-            return 'deleted'
-        abort(404)
-    return str(shipment_)
+
+
+@app.route('/shipment/<int:id>/delete', methods=['POST'])
+def deleteShipment(id):
+    shipment_ = Shipment.query.filter_by(shipment_id=id).first()
+    if shipment_:
+        db.session.delete(shipment_)
+        db.session.commit()
+        return redirect(url_for('RetrieveShipmentList'))
+    abort(404)
 
 
 @app.route('/delivery/create', methods=['GET', 'POST'])
@@ -177,11 +170,23 @@ def CreateDelivery():
 
 @app.route('/delivery', methods=['GET'])
 def RetrieveDeliveryList():
-    delivery_ = Delivery.query.all()
-    return str(delivery_)
+    headers, result = doGetAll(Delivery)
+    return render_template("entity_table.html",
+                           page={'title': 'Доставка', 'link': '/delivery'},
+                           t={'headers': headers, 'rows': result})
 
 
-@app.route('/delivery/<int:id>', methods=['GET', 'POST', 'DELETE'])
+@app.route('/delivery/<int:id>/delete', methods=['POST'])
+def deleteDelivery(id):
+    delivery_ = Delivery.query.filter_by(delivery_id=id).first()
+    if delivery_:
+        db.session.delete(delivery_)
+        db.session.commit()
+        return redirect(url_for('RetrieveDeliveryList'))
+    abort(404)
+
+
+@app.route('/delivery/<int:id>', methods=['GET', 'POST'])
 def RetrieveUpdateDeleteSingleDelivery(id):
     delivery_ = Delivery.query.filter_by(delivery_id=id).first()
     if request.method == 'GET':

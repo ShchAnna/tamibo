@@ -26,7 +26,7 @@ class ModelModel(db.Model):
     layout_patterns = db.Column(TEXT)
     tailoring_technology = db.Column(TEXT)
     size_range = db.Column(ARRAY(ENUM(Sizes, name='size_ranges')))
-    shipment = db.relationship('shipment', cascade="all, delete")
+    shipment = db.relationship('Shipment', cascade="all, delete")
     accessories = db.relationship('Accessories', cascade="all, delete")
     materials = db.relationship('Materials', cascade="all, delete")
 

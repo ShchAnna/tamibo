@@ -4,7 +4,8 @@ from sqlalchemy.dialects.postgresql import (
     DATE
 )
 
-class shipment(db.Model):
+
+class Shipment(db.Model):
     __tablename__ = "shipment"
 
     shipment_id = db.Column(db.INTEGER, primary_key=True)
@@ -26,3 +27,6 @@ class shipment(db.Model):
 
     def __repr__(self):
         return f"{self.shipment_id}:{self.model_id}:{self.shipment_date}:{self.products_number}:{self.rulers_number}"
+
+    def to_dict(self):
+        return {c.name: getattr(self, c.name, None) for c in self.__table__.columns}
