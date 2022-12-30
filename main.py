@@ -22,7 +22,7 @@ from models.Materials_cost import Materials_cost
 
 app = Flask(__name__)
 excel.init_excel(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/tamibo'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Sun580800@localhost/tamibo'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
@@ -642,6 +642,60 @@ def register():
 
     return render_template("auth/registration.html")
 
+@app.route('/model/<int:id>/accessories', methods=['GET'])
+def dowloadAccessories(id):
+    result = db.session.execute(db.select(Accessories).filter_by(model_id=id)).scalars().all()
+    headers = [c_attr.key for c_attr in inspect(Accessories).mapper.column_attrs]
+    return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
+                                               file_name='Accessories')
+
+@app.route('/model/<int:id>/materials', methods=['GET'])
+def dowloadMaterials(id):
+    result = db.session.execute(db.select(Materials).filter_by(model_id=id)).scalars().all()
+    headers = [c_attr.key for c_attr in inspect(Materials).mapper.column_attrs]
+    return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
+                                               file_name='Materials')
+
+@app.route('/model/<int:id>/shipment', methods=['GET'])
+def dowloadShipment(id):
+    result = db.session.execute(db.select(Shipment).filter_by(model_id=id)).scalars().all()
+    headers = [c_attr.key for c_attr in inspect(Shipment).mapper.column_attrs]
+    return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
+                                               file_name='Shipment')
+@app.route('/model/<int:id>/delivery', methods=['GET'])
+def dowloadDelivery(id):
+    result = db.session.execute(db.select(Delivery).filter_by(shipment_id=id)).scalars().all()
+    headers = [c_attr.key for c_attr in inspect(Delivery).mapper.column_attrs]
+    return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
+                                               file_name='Delivery')
+@app.route('/model/<int:id>/packing', methods=['GET'])
+def dowloadPacking(id):
+    result = db.session.execute(db.select(Packing).filter_by(shipment_id=id)).scalars().all()
+    headers = [c_attr.key for c_attr in inspect(Packing).mapper.column_attrs]
+    return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
+                                               file_name='Packing')
+
+@app.route('/model/<int:id>/jobs', methods=['GET'])
+def dowloadJobs(id):
+    result = db.session.execute(db.select(Jobs).filter_by(shipment_id=id)).scalars().all()
+    headers = [c_attr.key for c_attr in inspect(Jobs).mapper.column_attrs]
+    return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
+                                               file_name='Jobs')
+
+@app.route('/model/<int:id>/accessories_cost', methods=['GET'])
+def dowloadAccessories_cost(id):
+    result = db.session.execute(db.select(Accessories_cost).filter_by(shipment_id=id)).scalars().all()
+    headers = [c_attr.key for c_attr in inspect(Accessories_cost).mapper.column_attrs]
+    return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
+                                               file_name='Accessories_cost')
+
+@app.route('/model/<int:id>/materials_cost', methods=['GET'])
+def dowloadMaterials_cost(id):
+    result = db.session.execute(db.select(Materials_cost).filter_by(shipment_id=id)).scalars().all()
+    print(db.select(Materials_cost).filter_by(shipment_id=id))
+    headers = [c_attr.key for c_attr in inspect(Materials_cost).mapper.column_attrs]
+    return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
+                                               file_name='Materials_cost')
 
 if __name__ == '__main__':
     app.run(host='localhost', port=5000, debug=True)
