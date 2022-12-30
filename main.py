@@ -22,7 +22,7 @@ from models.Materials_cost import Materials_cost
 
 app = Flask(__name__)
 excel.init_excel(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Sun580800@localhost/tamibo'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/tamibo'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
@@ -62,7 +62,7 @@ def CreateModel():
         tailoring_technology = request.form['tailoring_technology']
         size_range = []
         for size in Sizes:
-            if request.form.get('size_range_'+size.name):
+            if request.form.get('size_range_' + size.name):
                 size_range.append(size)
         NewModel = ModelModel(model_name, article_number, photo, layout_patterns, tailoring_technology, size_range)
         db.session.add(NewModel)
@@ -78,8 +78,10 @@ def RetrieveModelList():
 
 
 @app.route('/model/download', methods=['GET'])
-def dowload():
+def dowloadModel():
     result = doGetAll(ModelModel)
+    for model in result:
+        model.range_size = str(model.range_size)
     headers = [c_attr.key for c_attr in inspect(ModelModel).mapper.column_attrs]
     return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
                                                file_name='sukarabotai')
@@ -90,7 +92,14 @@ def RetrieveUpdateDeleteSingleModel(id):
     model_ = ModelModel.query.filter_by(model_id=id).first()
     if request.method == 'GET':
         if model_:
-            return str(model_)
+            cheked_sizes = dict.fromkeys(Sizes)
+            for key,val in cheked_sizes.items():
+                if key in model_.size_range:
+                    cheked_sizes[key] = True
+                else:
+                    cheked_sizes[key] = False
+
+            return render_template("change/change_model.html", model=model_, sizes=cheked_sizes)
         return f"Model with id ={id} Doenst exist"
     if request.method == 'POST':
         if model_:
@@ -99,7 +108,10 @@ def RetrieveUpdateDeleteSingleModel(id):
             model_.photo = request.form['photo']
             model_.layout_patterns = request.form['layout_patterns']
             model_.tailoring_technology = request.form['tailoring_technology']
-            model_.size_range = request.form['size_range']
+            size_range = []
+            for size in Sizes:
+                if request.form.get('size_range_' + size.name):
+                    size_range.append(size)
             # model_ = ModelModel(model_name, article_number, photo, layout_patterns, tailoring_technology, size_range)
             # NewModel.model_id=id
             db.session.add(model_)
@@ -642,12 +654,14 @@ def register():
 
     return render_template("auth/registration.html")
 
+
 @app.route('/model/<int:id>/accessories', methods=['GET'])
 def dowloadAccessories(id):
     result = db.session.execute(db.select(Accessories).filter_by(model_id=id)).scalars().all()
     headers = [c_attr.key for c_attr in inspect(Accessories).mapper.column_attrs]
     return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
                                                file_name='Accessories')
+
 
 @app.route('/model/<int:id>/materials', methods=['GET'])
 def dowloadMaterials(id):
@@ -656,24 +670,30 @@ def dowloadMaterials(id):
     return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
                                                file_name='Materials')
 
+
 @app.route('/model/<int:id>/shipment', methods=['GET'])
 def dowloadShipment(id):
     result = db.session.execute(db.select(Shipment).filter_by(model_id=id)).scalars().all()
     headers = [c_attr.key for c_attr in inspect(Shipment).mapper.column_attrs]
     return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
                                                file_name='Shipment')
+
+
 @app.route('/model/<int:id>/delivery', methods=['GET'])
 def dowloadDelivery(id):
     result = db.session.execute(db.select(Delivery).filter_by(shipment_id=id)).scalars().all()
     headers = [c_attr.key for c_attr in inspect(Delivery).mapper.column_attrs]
     return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
                                                file_name='Delivery')
+
+
 @app.route('/model/<int:id>/packing', methods=['GET'])
 def dowloadPacking(id):
     result = db.session.execute(db.select(Packing).filter_by(shipment_id=id)).scalars().all()
     headers = [c_attr.key for c_attr in inspect(Packing).mapper.column_attrs]
     return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
                                                file_name='Packing')
+
 
 @app.route('/model/<int:id>/jobs', methods=['GET'])
 def dowloadJobs(id):
@@ -682,12 +702,14 @@ def dowloadJobs(id):
     return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
                                                file_name='Jobs')
 
+
 @app.route('/model/<int:id>/accessories_cost', methods=['GET'])
 def dowloadAccessories_cost(id):
     result = db.session.execute(db.select(Accessories_cost).filter_by(shipment_id=id)).scalars().all()
     headers = [c_attr.key for c_attr in inspect(Accessories_cost).mapper.column_attrs]
     return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
                                                file_name='Accessories_cost')
+
 
 @app.route('/model/<int:id>/materials_cost', methods=['GET'])
 def dowloadMaterials_cost(id):
@@ -696,6 +718,7 @@ def dowloadMaterials_cost(id):
     headers = [c_attr.key for c_attr in inspect(Materials_cost).mapper.column_attrs]
     return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
                                                file_name='Materials_cost')
+
 
 if __name__ == '__main__':
     app.run(host='localhost', port=5000, debug=True)

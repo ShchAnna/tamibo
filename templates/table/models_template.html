@@ -19,9 +19,30 @@
             <td>{{ row.tailoring_technology }}</td>
             <td>{% for size in row.size_range %}{{ size.value }}, {% endfor %}</td>
             <td>
-                <form action="/model/{{ row.model_id }}/delete" enctype="multipart/form-data" method="POST">
-                    <input type="submit" class="btn btn-danger" value="Удалить">
-                </form>
+                <div class="btn-group">
+                    <form class="btn-group" action="/model/{{ row.model_id }}/delete" enctype="multipart/form-data"
+                          method="POST">
+                        <input type="submit" class="btn btn-danger" value="Удалить">
+                    </form>
+                    <form class="btn-group" action="/model/{{ row.model_id }}" enctype="multipart/form-data"
+                          method="GET">
+                        <input type="submit" class="btn btn-warning" value="Изменить">
+                    </form>
+                    <div class="btn-group">
+                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Скачать документ
+                        </a>
+
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><a class="dropdown-item" href="/model/{{ row.model_id }}/accessories">Вся фурнитура</a>
+                            </li>
+                            <li><a class="dropdown-item" href="/model/{{ row.model_id }}/materials'">Все материалы</a>
+                            </li>
+                            <li><a class="dropdown-item" href="/model/{{ row.model_id }}/shipment">Все партии</a></li>
+                        </ul>
+                    </div>
+                </div>
             </td>
         </tr>
     {% endfor %}
