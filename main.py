@@ -662,27 +662,27 @@ def dowloadShipment(id):
     headers = [c_attr.key for c_attr in inspect(Shipment).mapper.column_attrs]
     return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
                                                file_name='Shipment')
-@app.route('/model/<int:id>/delivery', methods=['GET'])
+@app.route('/shipment/<int:id>/delivery', methods=['GET'])
 def dowloadDelivery(id):
     result = db.session.execute(db.select(Delivery).filter_by(shipment_id=id)).scalars().all()
     headers = [c_attr.key for c_attr in inspect(Delivery).mapper.column_attrs]
     return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
                                                file_name='Delivery')
-@app.route('/model/<int:id>/packing', methods=['GET'])
+@app.route('/shipment/<int:id>/packing', methods=['GET'])
 def dowloadPacking(id):
     result = db.session.execute(db.select(Packing).filter_by(shipment_id=id)).scalars().all()
     headers = [c_attr.key for c_attr in inspect(Packing).mapper.column_attrs]
     return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
                                                file_name='Packing')
 
-@app.route('/model/<int:id>/jobs', methods=['GET'])
+@app.route('/shipment/<int:id>/jobs', methods=['GET'])
 def dowloadJobs(id):
     result = db.session.execute(db.select(Jobs).filter_by(shipment_id=id)).scalars().all()
     headers = [c_attr.key for c_attr in inspect(Jobs).mapper.column_attrs]
     return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
                                                file_name='Jobs')
 
-@app.route('/model/<int:id>/accessories_cost', methods=['GET'])
+@app.route('/shipment/<int:id>/accessories_cost', methods=['GET'])
 def dowloadAccessories_cost(id):
     result = db.session.execute(db.select(Accessories_cost).filter_by(shipment_id=id)).scalars().all()
     headers = [c_attr.key for c_attr in inspect(Accessories_cost).mapper.column_attrs]
