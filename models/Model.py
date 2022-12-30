@@ -9,11 +9,11 @@ from sqlalchemy.dialects.postgresql import (
 
 
 class Sizes(Enum):
-    XS = auto()
-    S = auto()
-    M = auto()
-    L = auto()
-    XL = auto()
+    XS = 'XS'
+    S = 'S'
+    M = 'M'
+    L = 'L'
+    XL = 'XL'
 
 
 class ModelModel(db.Model):

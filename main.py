@@ -10,7 +10,7 @@ from flask_login import LoginManager, login_user
 from UserLogin import UserLogin
 from db_init import db
 
-from models.Model import ModelModel
+from models.Model import ModelModel, Sizes
 from models.Shipment import Shipment
 from models.Delivery import Delivery
 from models.Packing import Packing
@@ -52,7 +52,7 @@ def base():
 @app.route('/model/create', methods=['GET', 'POST'])
 def CreateModel():
     if request.method == 'GET':
-        return render_template('createModel.html')
+        return render_template("create/create_model.html", sizes=Sizes)
 
     if request.method == 'POST':
         model_name = request.form['model_name']
@@ -60,18 +60,21 @@ def CreateModel():
         photo = request.form['photo']
         layout_patterns = request.form['layout_patterns']
         tailoring_technology = request.form['tailoring_technology']
-        size_range = request.form['size_range']
+        size_range = []
+        for size in Sizes:
+            if request.form.get('size_range_'+size.name):
+                size_range.append(size)
         NewModel = ModelModel(model_name, article_number, photo, layout_patterns, tailoring_technology, size_range)
         db.session.add(NewModel)
         db.session.commit()
-        return str(NewModel)
+        return redirect(url_for('RetrieveModelList'))
 
 
 @app.route('/model', methods=['GET'])
 def RetrieveModelList():
     # model_ = ModelModel.query(ModelModel.model_id, ModelModel.model_name).all()
-    result = doGetAll(ModelModel)
-    return render_template("models_template.html", rows=result)
+    result = db.session.execute(db.select(ModelModel)).scalars().all()
+    return render_template("table/models_template.html", rows=result)
 
 
 @app.route('/model/download', methods=['GET'])
@@ -135,10 +138,10 @@ def CreateShipment():
 
 @app.route('/shipment', methods=['GET'])
 def RetrieveShipmentList():
-    headers, result = doGetAll(Shipment)
-    return render_template("entity_table.html",
-                           page={'title': 'Партии', 'link': '/shipment'},
-                           t={'headers': headers, 'rows': result})
+    q = db.select(ModelModel.model_name, Shipment.shipment_date, Shipment.products_number, Shipment.rulers_number,
+                  Shipment.shipment_id).join(ModelModel, ModelModel.model_id == Shipment.model_id)
+    result = db.session.execute(q).all()
+    return render_template("table/shipment_template.html", rows=result)
 
 
 @app.route('/shipment/<int:id>', methods=['GET', 'POST'])
@@ -191,10 +194,8 @@ def CreateDelivery():
 
 @app.route('/delivery', methods=['GET'])
 def RetrieveDeliveryList():
-    headers, result = doGetAll(Delivery)
-    return render_template("entity_table.html",
-                           page={'title': 'Доставка', 'link': '/delivery'},
-                           t={'headers': headers, 'rows': result})
+    result = db.session.execute(db.select(Delivery)).scalars().all()
+    return render_template("table/delivery_template.html", rows=result)
 
 
 @app.route('/delivery/<int:id>/delete', methods=['POST'])
@@ -254,8 +255,8 @@ def CreatePacking():
 
 @app.route('/packing', methods=['GET'])
 def RetrievePackingList():
-    packing_ = Packing.query.all()
-    return str(packing_)
+    result = db.session.execute(db.select(Packing)).scalars().all()
+    return render_template("table/packing_template.html", rows=result)
 
 
 @app.route('/packing/<int:id>', methods=['GET', 'POST', 'DELETE'])
@@ -304,8 +305,8 @@ def CreateJobs():
 
 @app.route('/jobs', methods=['GET'])
 def RetrieveJobsList():
-    jobs_ = Jobs.query.all()
-    return str(jobs_)
+    result = db.session.execute(db.select(Jobs)).scalars().all()
+    return render_template("table/jobs_template.html", rows=result)
 
 
 @app.route('/jobs/<int:id>', methods=['GET', 'POST', 'DELETE'])
@@ -353,8 +354,10 @@ def CreateAccessories():
 
 @app.route('/accessories', methods=['GET'])
 def RetrieveAccessoriesList():
-    accessories_ = Accessories.query.all()
-    return str(accessories_)
+    result = db.session.execute(
+        db.select(ModelModel.model_name, Accessories.accessories_name,
+                  Accessories.number_per_one).join(ModelModel)).all()
+    return render_template("table/accessoiries_template.html", rows=result)
 
 
 @app.route('/accessories/<int:id>', methods=['GET', 'POST', 'DELETE'])
@@ -402,8 +405,10 @@ def CreateAccessories_cost():
 
 @app.route('/accessories_cost', methods=['GET'])
 def RetrieveAccessories_costList():
-    accessories_cost_ = Accessories_cost.query.all()
-    return str(accessories_cost_)
+    result = db.session.execute(
+        db.select(Accessories.accessories_name, Accessories_cost.accessories_cost_id, Accessories_cost.accessories_cost,
+                  Accessories_cost.shipment_id, Accessories_cost.accessories_number).join(Accessories))
+    return render_template('table/accessoiries_cost_template.html', rows=result)
 
 
 @app.route('/accessories_cost/<int:id>', methods=['GET', 'POST', 'DELETE'])
@@ -451,8 +456,10 @@ def CreateMaterials():
 
 @app.route('/materials', methods=['GET'])
 def RetrieveMaterialsList():
-    materials_ = Materials.query.all()
-    return str(materials_)
+    result = db.session.execute(
+        db.select(ModelModel.model_name, Materials.materials_id, Materials.materials_name, Materials.m_per_ruler).join(
+            ModelModel)).all()
+    return render_template("table/materials_template.html", rows=result)
 
 
 @app.route('/materials/<int:id>', methods=['GET', 'POST', 'DELETE'])
@@ -500,8 +507,10 @@ def CreateMaterials_cost():
 
 @app.route('/materials_cost', methods=['GET'])
 def RetrieveMaterials_costList():
-    materials_cost_ = Materials_cost.query.all()
-    return str(materials_cost_)
+    result = db.session.execute(
+        db.select(Materials.materials_name, Materials_cost.materials_cost_id, Materials_cost.shipment_id,
+                  Materials_cost.materials_number, Materials_cost.materials_cost).join(Materials)).all()
+    return render_template("table/materials_cost_template.html", rows=result)
 
 
 @app.route('/materials_cost/<int:id>', methods=['GET', 'POST', 'DELETE'])
@@ -600,7 +609,7 @@ def login():
 
         return "Неверная пара логин/пароль", "error"
 
-    return 0
+    return render_template("auth/login.html")
 
 
 def addUser(name, email, hpsw):
@@ -630,8 +639,8 @@ def register():
         else:
             return "Неверно заполнены поля", "error"
 
-    return 0
+    return render_template("auth/registration.html")
 
 
 if __name__ == '__main__':
-    app.run(host='localhost', port=5000)
+    app.run(host='localhost', port=5000, debug=True)

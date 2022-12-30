@@ -1,0 +1,29 @@
+{% extends "table/table_template.html" %}
+{% block tname %}Доставка{% endblock tname %}
+{% block theaders %}
+    <th>№_</th>
+    <th>№ Партии</th>
+    <th>Откуда</th>
+    <th>Куда</th>
+    <th>Способ</th>
+    <th>Содержимое</th>
+    <th>Стоимость</th>
+{% endblock theaders %}
+{% block trows %}
+    {% for row in rows %}
+        <tr>
+            <td>{{ row.delivery_id }}</td>
+            <td>{{ row.shipment_id }}</td>
+            <td>{{ row.from_where }}</td>
+            <td>{{ row.to_where }}</td>
+            <td>{{ row.tipe_delivery }}</td>
+            <td>{{ row.object_delivery }}</td>
+            <td>{{ row.delivery_cost }}</td>
+            <td>
+                <form action="/delivery/{{ row.delivery_id }}/delete" enctype="multipart/form-data" method="POST">
+                    <input type="submit" class="btn btn-danger" value="Удалить">
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+{% endblock trows %}

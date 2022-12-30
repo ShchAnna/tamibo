@@ -1,5 +1,10 @@
-{% extends "table_template.html" %}
+{% extends "table/table_template.html" %}
 {% block tname %}Ассортимент{% endblock tname %}
+{% block add %}
+    <form action="/model/create" enctype="multipart/form-data" method="GET">
+        <input type="submit" class="btn btn-success" value="Добавить">
+    </form>
+{% endblock %}
 {% block theaders %}
     <th>Наименование</th>
     <th>Артикул</th>
@@ -12,11 +17,11 @@
         <tr>
             <td>{{ row.model_name }}</td>
             <td>{{ row.article_number }}</td>
-            <td>{{ row.photo }}</td>
+            <td><img src="{{ row.photo }}" class="img-fluid" alt=""></td>
             <td>{{ row.layout_patterns }}</td>
-            <td>{% for size in row.sizes %}{{ size }}, {% endfor %}</td>
+            <td>{% for size in row.size_range %}{{ size.value }}, {% endfor %}</td>
             <td>
-                <form action="/mode/{{ row.model_id }}/delete" enctype="multipart/form-data" method="POST">
+                <form action="/model/{{ row.model_id }}/delete" enctype="multipart/form-data" method="POST">
                     <input type="submit" class="btn btn-danger" value="Удалить">
                 </form>
             </td>

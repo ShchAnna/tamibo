@@ -1,0 +1,36 @@
+{% extends "index.html" %}
+{% block content %}
+    <form action="/model/create" enctype="multipart/form-data" method="POST">
+        <div class="mb-3">
+            <label for="nameInput" class="form-label">Название</label>
+            <input type="text" class="form-control" id="nameInput" name="model_name">
+        </div>
+        <div class="mb-3">
+            <label for="aricleInput" class="form-label">Артикул</label>
+            <input type="text" class="form-control" id="aricleInput" name="article_number">
+        </div>
+        <div class="mb-3">
+            <label for="photoInput" class="form-label">Фото</label>
+            <input type="text" class="form-control" id="photoInput" name="photo">
+            <div id="photoHelp" class="form-text">Вставьте ссылку на фото</div>
+        </div>
+        <div class="mb-3">
+            <label for="laysInput" class="form-label">Лекала</label>
+            <input type="text" class="form-control" id="laysInput" name="layout_patterns">
+            <div id="laysHelp" class="form-text">Вставьте ссылку на файл</div>
+        </div>
+        <div class="mb-3">
+            <label for="techInput" class="form-label">Технология пошива</label>
+            <input type="text" class="form-control" id="techInput" name="tailoring_technology">
+        </div>
+        {% for size in sizes %}
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="size_range_{{ size.name }}" id="flexCheckChecked">
+            <label class="form-check-label" for="flexCheckChecked">
+                {{ size.name }}
+            </label>
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
+{% endblock %}

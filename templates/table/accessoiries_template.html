@@ -1,0 +1,21 @@
+{% extends "table/table_template.html" %}
+{% block tname %}Фурнитура{% endblock tname %}
+{% block theaders %}
+    <th>Модель</th>
+    <th>Наименование</th>
+    <th>Кол-во для изделия</th>
+{% endblock theaders %}
+{% block trows %}
+    {% for row in rows %}
+        <tr>
+            <td>{{ row.model_name }}</td>
+            <td>{{ row.accessories_name }}</td>
+            <td>{{ row.number_per_one }}</td>
+            <td>
+                <form action="/accessoiries/{{ row.accessoiries_id }}/delete" enctype="multipart/form-data" method="POST">
+                    <input type="submit" class="btn btn-danger" value="Удалить">
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+{% endblock trows %}
