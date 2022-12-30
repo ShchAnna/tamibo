@@ -689,7 +689,7 @@ def dowloadAccessories_cost(id):
     return excel.make_response_from_query_sets(query_sets=result, column_names=headers, file_type="xls",
                                                file_name='Accessories_cost')
 
-@app.route('/model/<int:id>/materials_cost', methods=['GET'])
+@app.route('/shipment/<int:id>/materials_cost', methods=['GET'])
 def dowloadMaterials_cost(id):
     result = db.session.execute(db.select(Materials_cost).filter_by(shipment_id=id)).scalars().all()
     print(db.select(Materials_cost).filter_by(shipment_id=id))
