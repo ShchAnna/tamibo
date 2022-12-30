@@ -1,7 +1,9 @@
 {% extends "index.html" %}
 {% block content %}
     <h1>{% block tname %}{% endblock %}</h1>
-    {% block add %}{% endblock add %}
+    <form action="{% block add %}{% endblock add %}" enctype="multipart/form-data" method="GET">
+        <input type="submit" class="btn btn-success" value="Добавить">
+    </form>
     <table class="table">
         <thead>
         <tr>

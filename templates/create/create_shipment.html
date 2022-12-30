@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+{% block content %}
+    <form action="/shipment/create" enctype="multipart/form-data" method="POST">
+        <div class="mb-3">
+            <label for="startDate" class="form-label">Дата</label>
+            <input id="startDate" class="form-control" type="date" name="shipment_date"/>
+        </div>
+        <div class="mb-3">
+            <label for="aricleInput" class="form-label">Количество</label>
+            <input type="number" class="form-control" id="aricleInput" name="products_number">
+        </div>
+        <div class="mb-3">
+            <label for="laysInput" class="form-label">Линеек</label>
+            <input type="number" class="form-control" id="laysInput" name="rulers_number">
+        </div>
+        <div class="mb-3">
+            <select class="form-select" aria-label="Выбрать модель" name="model_id">
+                {% for model in models %}
+                <option value="{{ model.model_id }}">{{ model.model_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
+{% endblock %}

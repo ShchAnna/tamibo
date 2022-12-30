@@ -123,7 +123,8 @@ def deleteModel(id):
 @app.route('/shipment/create', methods=['GET', 'POST'])
 def CreateShipment():
     if request.method == 'GET':
-        return render_template('createModel.html')
+        models = db.session.execute(db.select(ModelModel.model_id, ModelModel.model_name)).all()
+        return render_template('create/create_shipment.html', models=models)
 
     if request.method == 'POST':
         model_id = request.form['model_id']
@@ -133,7 +134,7 @@ def CreateShipment():
         NewShipment = Shipment(model_id, shipment_date, products_number, rulers_number)
         db.session.add(NewShipment)
         db.session.commit()
-        return str(NewShipment)
+        return redirect(url_for("RetrieveShipmentList"))
 
 
 @app.route('/shipment', methods=['GET'])
